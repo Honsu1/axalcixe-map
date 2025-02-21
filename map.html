@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ge">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,12 +22,38 @@
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Функция для добавления метки по клику
+        var markers = []; // მასივი ნიშნების შესანახად
+
+        var redIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // დაწკაპუნებით ნიშნის დამატების ფუნქცია
         function onMapClick(e) {
-            L.marker(e.latlng).addTo(map)
-                .bindPopup("Метка: " + e.latlng.toString())
-                .openPopup();
+            var marker = L.marker(e.latlng, { icon: redIcon }).addTo(map);
+            markers.push(marker); // ვამატებთ ნიშანს მასივში
+            
+            // Создаем кнопку удаления
+            var popupContent = document.createElement("div");
+            popupContent.innerHTML = "ნიშანი: " + e.latlng.toString();
+            var removeBtn = document.createElement("button");
+            removeBtn.textContent = "ნიშნის წაშლა";
+            removeBtn.style.display = "block";
+            removeBtn.style.marginTop = "5px";
+            removeBtn.onclick = function() {
+                map.removeLayer(marker);
+                markers = markers.filter(m => m !== marker); // მასივიდან ნიშნის წაშლა
+            };
+            
+            popupContent.appendChild(removeBtn);
+            marker.bindPopup(popupContent).openPopup();
         }
+
         map.on('click', onMapClick);
     </script>
 </body>
